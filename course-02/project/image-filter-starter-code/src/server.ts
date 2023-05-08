@@ -33,13 +33,25 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
     const image_url : string = req.query.image_url.toString();
 
     // validate the image_url query
+    if (!image_url) {
+      return res.status(400)
+          .send(`image url is required`)
+    }
+
     // filter the image
-    let filteredpath = await filterImageFromURL(image_url, res);
-    // send the resulting file in the response
-    res.sendFile(filteredpath, (err) => {
-      // deletes any files on the server on finish of the response
-      deleteLocalFiles([filteredpath]);
-    });
+    try {
+      let filteredpath = await filterImageFromURL(image_url, res);
+      // send the resulting file in the response
+      res.status(200).sendFile(filteredpath, (err) => {
+        // deletes any files on the server on finish of the response
+        deleteLocalFiles([filteredpath]);
+      });
+  } catch (error) {
+      console.log(error);
+      res.status(422).send("The action could not be processed properly due to invalid data provided!");
+  }
+
+
   }); 
 
   //! END @TODO1
