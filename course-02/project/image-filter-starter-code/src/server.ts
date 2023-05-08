@@ -1,4 +1,4 @@
-import express from 'express';
+import express, {Request, Response} from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
@@ -28,17 +28,30 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   //   the filtered image file [!!TIP res.sendFile(filteredpath); might be useful]
 
   /**************************************************************************** */
-   app.get( "/filteredimage", async ( req, res ) => {
+
+  app.get( "/filteredimage", async ( req: Request, res: Response) => {
     // Get URL
-    let imageURL = req.query.image_url;
+    const image_url : string = req.query.image_url.toString();
+
     // validate the image_url query
+    if (!image_url) {
+      return res.status(400)
+          .send(`image url is required`)
+    }
+
     // filter the image
-    let filteredpath = await filterImageFromURL(imageURL, res);
-    // send the resulting file in the response
-    res.sendFile(filteredpath, (err) => {
-      // deletes any files on the server on finish of the response
-      deleteLocalFiles([filteredpath]);
-    });
+    try {
+      let filteredpath = await filterImageFromURL(image_url, res);
+      // send the resulting file in the response
+      res.status(200).sendFile(filteredpath, (err) => {
+        // deletes any files on the server on finish of the response
+        deleteLocalFiles([filteredpath]);
+      });
+  } catch (error) {
+      console.log(error);
+      res.status(422).send("The action could not be processed properly due to invalid data provided!");
+  }
+  
   }); 
 
   //! END @TODO1
