@@ -28,6 +28,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   //   the filtered image file [!!TIP res.sendFile(filteredpath); might be useful]
 
   /**************************************************************************** */
+
   app.get( "/filteredimage", async ( req: Request, res: Response) => {
     // Get URL
     const image_url : string = req.query.image_url.toString();
@@ -50,8 +51,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
       console.log(error);
       res.status(422).send("The action could not be processed properly due to invalid data provided!");
   }
-
-
+  
   }); 
 
   //! END @TODO1
